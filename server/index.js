@@ -6,11 +6,6 @@ const db = require("./db");
 const PORT = process.env.PORT || 4000;
 const app = express();
 
-// Middleware --> My Middleware
-// app.use((req, res, next) => {
-//     console.log("middleware yay!")
-//     next()
-// })
 app.use(cors());
 app.use(express.json());
 
@@ -36,14 +31,21 @@ app.get("/api/v1/restaurants", async (req, res) => {
 // get one restaurant
 app.get("/api/v1/restaurants/:id", async (req, res) => {
   try {
-    const results = await db.query("SELECT * FROM restaurants WHERE id = $1", [
-      req.params.id,
-    ]);
+    const restaurant = await db.query(
+      "SELECT * FROM restaurants WHERE id = $1",
+      [req.params.id]
+    );
+
+    const reviews = await db.query(
+      "SELECT * FROM reviews WHERE restaurant_id = $1",
+      [req.params.id]
+    );
+
     res.status(200).json({
       status: "OK - Get one restaurant",
-      results: results.rows.length,
       data: {
-        restaurants: results.rows[0],
+        restaurant: restaurant.rows[0],
+        reviews: reviews.rows,
       },
     });
   } catch (err) {
@@ -112,6 +114,33 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
     res.status(400).json({
       status: "FAIL - Delete one restaurant",
       err,
+    });
+  }
+});
+
+// Add a Review
+app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
+  try {
+    const newReview = await db.query(
+      "INSERT INTO reviews(restaurant_id, name, rating, review) values($1, $2, $3, $4) returning *",
+      [
+        req.params.id,
+        req.body.name,
+        req.body.rating,
+        req.body.review
+      ]
+    );
+    res.status(201).json({
+      status: "OK - Insert one review",
+      results: newReview.rows.length,
+      data: {
+        review: newReview.rows[0],
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "FAIL - Insert one review",
+      error,
     });
   }
 });
