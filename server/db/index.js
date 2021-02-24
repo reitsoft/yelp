@@ -1,7 +1,3 @@
-const { Pool } = require("pg");
+const Sequelize = require("sequelize");
 
-const pool = new Pool();
-
-module.exports = {
-  query: (text, params) => pool.query(text, params),
-};
+module.exports = new Sequelize(process.env.PG_URI);
