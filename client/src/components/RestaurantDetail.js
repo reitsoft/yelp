@@ -16,6 +16,7 @@ const RestaurantDetail = () => {
     const fetchData = async () => {
       try {
         const response = await RestaurantFinder.get(`/${id}`);
+        console.log(response.data.data)
         setSelectedRestaurant(response.data.data);
       } catch (error) {
         console.log(error);
@@ -27,22 +28,20 @@ const RestaurantDetail = () => {
   return (
     selectedRestaurant && (
       <>
-        <h2>{selectedRestaurant.restaurant.name}</h2>
+        <h2>{selectedRestaurant.name}</h2>
         <div>
           <div>
-            <StartRating rating={selectedRestaurant.restaurant.avg_rating} />
-            <span className="text-warning ml-1">
+            {/* <StartRating rating={selectedRestaurant.restaurant.avg_rating} /> */}
+            {/* <span className="text-warning ml-1">
               {selectedRestaurant.restaurant.count
                 ? `(${selectedRestaurant.restaurant.count})`
                 : "0 Bewertungen"}
-            </span>
+            </span> */}
           </div>
-          {/* SELECT TRUNC(AVG(rating), 2) AS avg_rating FROM reviews WHERE restaurant_id= ...; */}
-          {/* SELECT COUNT(rating) FROM reviews WHERE restaurant_id = ...; */}
         </div>
         <AddReview />
         <div className="mt-3">
-          <Reviews reviews={selectedRestaurant.reviews} />
+          {/* <Reviews reviews={selectedRestaurant.reviews} /> */}
         </div>
       </>
     )
